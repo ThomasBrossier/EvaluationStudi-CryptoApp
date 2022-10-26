@@ -1,0 +1,101 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter une crypto{% endblock %}
+
+{% block body %}
+    <header class="justify-content-start align-items-center">
+        <a href="{{ path('app_home') }}" class="close-btn"><i class="fa-solid fa-xmark"></i></a>
+        <h1>Ajouter une transaction</h1>
+    </header>
+    <main>
+
+    <div class="board">
+        {% include 'view/elements/_flashes.html.twig' %}
+        <form method="POST" action="{{ path('app_add') }}" class="">
+            <div>
+                <div class="form-row">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <select id="crypto" class="form-select" name="crypto" required>
+                        <option value="">Selectionnez une crypto</option>
+                        {% for crypto in cryptos %}
+                            <option id={{crypto.symbol}} value="{{crypto.symbol}}" data-price="{{crypto.quote.EUR.price|round(2,'ceil')}}" >{{crypto.symbol}} -<span> {{crypto.name}}</span> <span>( {{crypto.quote.EUR.price|round(2,'ceil')}} €)</span></option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-row">
+                    <i class="fa-solid fa-coins"></i>
+                    <input type="text" id="quantity" class="input-group" placeholder="Quantité" name="quantity" required>
+                </div>
+                <div class="form-row">
+                    <i class="fa-solid fa-euro-sign"></i>
+                    <input type="text" id="price" class="input-group" placeholder="Prix d'achat" name="value" required>
+                </div>
+            </div>
+            <button class="btn btn-main" type="submit">Ajouter</button>
+        </form>
+    </div>
+    </main>
+
+{% endblock %}
+{% block customJS%}
+<script>
+    window.onload = ()=>{
+        let priceInput = document.querySelector('#price');
+        priceInput.value = "";
+        let cryptoSelect = document.querySelector('#crypto');
+        cryptoSelect.selectedIndex = 0;
+        let quantityInput = document.querySelector('#quantity');
+        quantityInput.value = "";
+        let cryptoValue = ""
+        let changeInputPrice = (value)=>{
+            let priceInput = document.querySelector('#price');
+            if(value === ""){
+                priceInput.value = ""
+            }else{
+                priceInput.value = Math.round(value*100)/100
+            }
+        }
+        let changeInputQuantity = (value)=>{
+            let quantityInput = document.querySelector('#quantity');
+            if(value === ""){
+                quantityInput.value = ""
+            }else{
+                quantityInput.value = value
+            }
+        }
+
+        cryptoSelect.addEventListener('change',(e)=>{
+            quantityInput.value = "";
+            priceInput.value = "";
+            if( cryptoSelect.value !== ""){
+                cryptoValue = document.querySelector('#'+ cryptoSelect.value).dataset['price'];
+
+            }
+        })
+        quantityInput.addEventListener('input',()=>{
+            if(cryptoSelect.value === ""){
+                quantityInput.value="";
+                return
+            }
+            if (quantityInput.value !== ""){
+               changeInputPrice(quantityInput.value * cryptoValue);
+            }else{
+                changeInputPrice("");
+            }
+
+        })
+        priceInput.addEventListener('input',(e)=>{
+            if(cryptoSelect.value === ""){
+                priceInput.value="";
+                return
+            }
+            if (e.target.value !== ""){
+                changeInputQuantity(e.target.value / cryptoValue);
+
+            }else{
+                changeInputQuantity("");
+            }
+        })
+    }
+</script>
+{% endblock %}

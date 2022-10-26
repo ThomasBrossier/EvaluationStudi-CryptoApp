@@ -1,5 +1,10 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
+    http_client:
+        default_options:
+            headers:
+                'Accepts': 'application/json'
+                'X-CMC_PRO_API_KEY': '52a79d85-5703-4ba1-8b1c-600c03936e85'
     secret: '%env(APP_SECRET)%'
     #csrf_protection: true
     http_method_override: false

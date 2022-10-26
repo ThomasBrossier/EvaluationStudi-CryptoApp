@@ -1,0 +1,130 @@
+/* ============== PRINCIPAL ======================*/
+
+body {
+    background-color: #100f0f;
+    font-family: 'Roboto', sans-serif;
+    box-sizing: border-box;
+    min-height: 100vh;
+    width: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+}
+body,h1,h2,h3,h4,a{
+  color: white;
+  margin: 0;
+  padding: 0;
+}
+
+header{
+  flex: 1;
+  display: flex;
+  flex-wrap: nowrap;
+  border-bottom: 1px solid grey;
+  h1{
+    font-size: 1.4rem;
+  }
+}
+main{
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  flex: 11;
+}
+.board{
+  flex: 5;
+  padding: 2rem 2rem ;
+  justify-content: space-between;
+}
+.btn-main{
+    height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+    background-color: #ffffff;
+  &:hover{
+    background-color: #585757;
+  }
+}
+
+.close-btn,.add-btn{
+  color: white;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+}
+.close-btn i,.add-btn i{
+  font-size: 1.5rem;
+}
+
+
+/* ============== PAGE AJOUTER  UNE CRYPTO ======================*/
+
+
+form{
+  padding: 1rem;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  height: auto;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  .form-row{
+    border: 1px solid grey;
+    margin: 1rem 0;
+    height: 60px;
+    display: flex;
+    border-radius: 5px;
+    justify-content: space-between;
+    align-items: center;
+    i{
+      margin: 0 1rem ;
+    }
+    input{
+      background-color: transparent;
+      color: grey;
+      outline: none;
+      box-shadow: none;
+      border: none;
+    }
+    select{
+      background-color: transparent;
+      color: grey;
+      padding: 0;
+      outline: none;
+      box-shadow: none;
+      border: none;
+    }
+  }
+}
+ /* ============== PAGE ACCUEIL ======================*/
+
+  .transaction_row{
+    font-size: 1.5rem;
+    margin: 0 1rem;
+    padding : 1rem 0;
+    border-bottom: 1px solid grey;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+    img{
+      width:20px
+    }
+  }
+  .amount{
+    flex: 1;
+    max-width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url("../image/banner.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    span{
+      font-size: 2.5rem;
+      font-weight: bold;
+    }
+  }

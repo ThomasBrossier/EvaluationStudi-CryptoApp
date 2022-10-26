@@ -1,0 +1,83 @@
+<?php
+
+namespace App\Service;
+
+use App\Repository\CryptoMoneyRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
+
+class CryptoApiService extends AbstractController
+{
+    public function __construct(
+        private HttpClientInterface $httpClient,
+        private string $baseUrl = 'https://pro-api.coinmarketcap.com/'
+    )
+    {
+    }
+
+    public function getCryptos()
+    {
+        return  $this->httpClient->request('GET',  $this->baseUrl.'v1/cryptocurrency/listings/latest', [
+            'query' => [
+                'convert' => 'EUR'
+            ]
+        ])->toArray()['data'];
+    }
+    public function getCryptosFiltered(array $cryptosOwned )
+    {
+        $cryptosDownloaded =  $this->getCryptos();
+        $amount = 0;
+        $filteredCryptos = [];
+        foreach ($cryptosOwned as $cryptoOwned){
+            foreach ($cryptosDownloaded as $cryptoDownloaded){
+                if($cryptoDownloaded['symbol'] === $cryptoOwned->getSymbol()){
+                    $crypto['symbol'] = $cryptoOwned->getSymbol() ;
+                    $crypto['title'] = $cryptoOwned->getTitle() ;
+                    $crypto['logoLink'] = $cryptoOwned->getLogoLink() ;
+                    $crypto['totalValueSpent'] = $cryptoOwned->getTotalSpent();
+                    $crypto['totalValueNow'] = $cryptoDownloaded['quote']['EUR']['price'] * $cryptoOwned->getTotalQuantity() ;
+                    $totalValueNow = $cryptoOwned->getTotalQuantity() * $cryptoDownloaded['quote']['EUR']['price'];
+                    $buyTotalValue = $cryptoOwned->getTotalSpent();
+                    $amount += $totalValueNow - $buyTotalValue;
+                    $filteredCryptos['cryptos'][] = $crypto;
+                }
+            }
+        }
+        $filteredCryptos['amount'] = $amount;
+        return $filteredCryptos;
+    }
+ /*    public function getAMountNow( array $cryptosDownloaded, array $cryptosOwned ) : float
+    {
+        $amount = 0 ;
+        foreach ($cryptosOwned as $cryptoOwned){
+            foreach ($cryptosDownloaded as $cryptoDownloaded){
+                if($cryptoDownloaded['symbol'] === $cryptoOwned->getSymbol()){
+                    $totalValueNow = $cryptoOwned->getTotalQuantity() * $cryptoDownloaded['quote']['EUR']['price'];
+                    $buyTotalValue = $cryptoOwned->getTotalSpent();
+                    $amount += $totalValueNow - $buyTotalValue;
+                }
+            }
+        }
+        return $amount;
+    }*/
+    public function getCryptosBySymbol($symbol)
+    {
+
+        return $this->httpClient->request('GET',  $this->baseUrl.'v2/cryptocurrency/quotes/latest', [
+            'query' => [
+                'symbol' => $symbol,
+                'convert' => 'EUR'
+            ]
+        ]);
+    }
+    public function getLogoBySymbol($symbol)
+    {
+
+        return $this->httpClient->request('GET',  $this->baseUrl.'v2/cryptocurrency/info', [
+            'query' => [
+                'symbol' => $symbol,
+            ]
+        ]);
+    }
+}
