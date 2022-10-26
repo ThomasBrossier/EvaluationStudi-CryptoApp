@@ -69,7 +69,7 @@ class CryptoApiService extends AbstractController
                 'symbol' => $symbol,
                 'convert' => 'EUR'
             ]
-        ]);
+        ])->toArray()['data'][$symbol][0];
     }
     public function getLogoBySymbol($symbol)
     {

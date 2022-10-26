@@ -17,10 +17,9 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 #[Route('/', name: 'app_')]
 class CryptoController extends AbstractController
 {
-    #[Route('/accueil', name: 'home')]
+    #[Route('/', name: 'home')]
     public function index(Request $request, CryptoApiService $api, CryptoMoneyRepository $cryptoMoneyRepository,PaginatorInterface $paginator): Response
     {
-        $data = $api->getCryptos();
         $cryptoMoneys =  $api->getCryptosFiltered( $cryptoMoneyRepository->findAllWithTransactions() );
         /*$cryptoMoneys = $paginator->paginate(
             $cryptoMoneyQuery,
@@ -32,23 +31,55 @@ class CryptoController extends AbstractController
             'align' => 'center',
             'rounded' => true,
         ]);*/
-
         return $this->render('view/home.html.twig', [
             'controller_name' => 'HomeController',
             'cryptos' =>  $cryptoMoneys['cryptos'],
             'amount' => $cryptoMoneys['amount']
         ]);
     }
-    #[Route('/ajouter-une-crypto', name: 'add_view')]
-    public function addView(CryptoApiService $api): Response
+    #[Route('/ajouter-une-crypto', name: 'add')]
+    public function addView(Request $request, CryptoApiService $api, CryptoMoneyRepository $cryptoMoneyRepository): Response
     {
         $data = $api->getCryptos();
+        if($request->request->get('crypto')){
+
+            try{
+                $choices = $request->request;
+                $quantity = $choices->get('quantity');
+                $symbol = $choices->get('symbol');
+                $currentCryptoDetails = $api->getCryptosBySymbol($symbol);
+                $crypto = $cryptoMoneyRepository->findOneBy(['symbol'=> $symbol]);
+
+                if(!$crypto){
+                    $currentLogoLink = $api->getLogoBySymbol($symbol)->toArray()['data'][$symbol][0]['logo'];
+                    $crypto = new CryptoMoney();
+                    $crypto->setTitle($currentCryptoDetails['name'])
+                        ->setSymbol($symbol)
+                        ->setLogoLink($currentLogoLink);
+                }
+                $transaction = new Transaction();
+                $transaction->setQuantity( $quantity )
+                    ->setUnitPrice($currentCryptoDetails['quote']['EUR']['price'])
+                    ->setCreatedAt(new \DateTimeImmutable())
+                    ->setType('purchase');
+
+                $crypto->addTransaction($transaction);
+                $cryptoMoneyRepository->save($crypto,true);
+                $this->addFlash('success', 'La crypto a bien été ajouté');
+            } catch ( Exception $exception){
+                $this->addFlash('error', $exception->getMessage());
+            }
+        }
+
+
         return $this->render('view/add.html.twig', [
             'controller_name' => 'HomeController',
             'cryptos' => $data,
         ]);
     }
-    #[Route('/supprimer-une-crypto', name: 'delete_view')]
+
+
+    #[Route('/supprimer-une-crypto', name: 'delete')]
     public function deleteView(): Response
     {
         return $this->render('view/delete.html.twig', [
@@ -63,39 +94,4 @@ class CryptoController extends AbstractController
         ]);
     }
 
-
-    #[Route('/add', name: 'add')]
-    public function add(Request $request, CryptoApiService $api, CryptoMoneyRepository $cryptoMoneyRepository): Response
-    {
-
-        try{
-            $currentCryptoSymbol = $request->request->get('crypto');
-            $currentCryptoDetails = $api->getCryptosBySymbol($currentCryptoSymbol)->toArray()['data'][$currentCryptoSymbol][0];
-            $choices = $request->request;
-
-            $crypto = $cryptoMoneyRepository->findOneBy(['symbol'=> $currentCryptoSymbol]);
-
-            if(!$crypto){
-                $currentLogoLink = $api->getLogoBySymbol($currentCryptoSymbol)->toArray()['data'][$currentCryptoSymbol][0]['logo'];
-                $crypto = new CryptoMoney();
-                $crypto->setTitle($currentCryptoDetails['name'])
-                    ->setSymbol($currentCryptoSymbol)
-                    ->setLogoLink($currentLogoLink)
-                    ->setTotalQuantity(0);
-            }
-            $transaction = new Transaction();
-            $transaction->setQuantity($choices->get('quantity'))
-                        ->setUnitPrice($currentCryptoDetails['quote']['EUR']['price'])
-                        ->setCreatedAt(new \DateTimeImmutable())
-                        ->setType('purchase');
-
-            $crypto->addTransaction($transaction);
-            $cryptoMoneyRepository->save($crypto,true);
-            $this->addFlash('success', 'La crypto a bien été ajouté');
-        } catch ( Exception $exception){
-            $this->addFlash('error', $exception->getMessage());
-        }
-
-        return $this->redirectToRoute('app_add_view');
-    }
 }

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\TransactionRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TransactionRepository::class)]
 class Transaction
@@ -14,12 +15,27 @@ class Transaction
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    #[Assert\Positive]
+    #[Assert\Type(
+        type: 'float',
+        message: 'La valeur {{ value }} n\'est pas valide. Il faut un nombre decimale.',
+    )]
     private ?float $quantity = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    #[Assert\Positive]
+    #[Assert\Type(
+        type: 'float',
+        message: 'La valeur {{ value }} n\'est pas valide. Il faut un nombre decimale.',
+    )]
     private ?float $unitPrice = null;
 
     #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'transactions')]
