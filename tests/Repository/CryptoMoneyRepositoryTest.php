@@ -46,6 +46,16 @@ class CryptoMoneyRepositoryTest extends KernelTestCase
         $this->assertCount(1,$cryptos);
         $repo->remove($crypto,true);
     }
+    public function testOneBySymbol(): void
+    {
+
+        $crypto = $this->getEntity();
+        $repo = $this->entityManager->getRepository(CryptoMoney::class);
+        $repo->save($crypto,true);
+        $cryptos = $repo->findOneBy(['symbol'=>'BTC']);
+        $this->assertInstanceOf(CryptoMoney::class, $cryptos);
+        $repo->remove($crypto,true);
+    }
     public function testFindAllWithTransactions(): void
     {
         $crypto = $this->getEntity();

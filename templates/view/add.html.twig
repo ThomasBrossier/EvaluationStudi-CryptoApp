@@ -14,21 +14,30 @@
         <form method="POST" action="{{ path('app_add') }}" class="">
             <div>
                 <div class="form-row">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <select id="crypto" class="form-select" name="crypto" required>
-                        <option value="">Selectionnez une crypto</option>
-                        {% for crypto in cryptos %}
-                            <option id={{crypto.symbol}} value="{{crypto.symbol}}" data-price="{{crypto.quote.EUR.price|round(2,'ceil')}}" >{{crypto.symbol}} -<span>{{crypto.name}}</span> <span>( {{crypto.quote.EUR.price|round(2,'ceil')}} €)</span></option>
-                        {% endfor %}
-                    </select>
+                    <div class="form-input">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <select id="crypto" class="form-select" name="crypto" required>
+                            <option value="">Selectionnez une crypto</option>
+                            {% for crypto in cryptos %}
+                                <option id={{crypto.symbol}} value="{{crypto.symbol}}" data-price="{{crypto.quote.EUR.price|round(2,'ceil')}}" >{{crypto.symbol}} -<span>{{crypto.name}}</span> <span>( ≃{{crypto.quote.EUR.price|round(2,'ceil')}} €)</span></option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <span class="form-error error-select"></span>
                 </div>
                 <div class="form-row">
-                    <i class="fa-solid fa-coins"></i>
-                    <input type="text" id="quantity" class="input-group" placeholder="Quantité" name="quantity" required>
+                    <div class="form-input">
+                        <i class="fa-solid fa-coins"></i>
+                        <input type="text" id="quantity" class="input-group" placeholder="Quantité" name="quantity" required>
+                    </div>
+                    <span class="form-error error-quantity"></span>
                 </div>
                 <div class="form-row">
-                    <i class="fa-solid fa-euro-sign"></i>
-                    <input type="text" id="price" class="input-group" placeholder="Prix d'achat" name="value" required>
+                    <div class="form-input">
+                        <i class="fa-solid fa-euro-sign"></i>
+                        <input type="text" id="price" class="input-group" placeholder="Prix d'achat" name="value" required>
+                    </div>
+                    <span class="form-error error-value"></span>
                 </div>
             </div>
             <button class="btn btn-main" type="submit">Ajouter</button>
@@ -39,32 +48,51 @@
 {% endblock %}
 {% block customJS%}
 <script>
-    window.onload = ()=>{
-        let priceInput = document.querySelector('#price');
-        priceInput.value = "";
-        let cryptoSelect = document.querySelector('#crypto');
-        cryptoSelect.selectedIndex = 0;
-        let quantityInput = document.querySelector('#quantity');
-        quantityInput.value = "";
-        let cryptoValue = ""
-        let changeInputPrice = (value)=>{
-            let priceInput = document.querySelector('#price');
-            if(value === ""){
-                priceInput.value = ""
-            }else{
-                priceInput.value = Math.round(value*100)/100
-            }
-        }
-        let changeInputQuantity = (value)=>{
-            let quantityInput = document.querySelector('#quantity');
-            if(value === ""){
-                quantityInput.value = ""
-            }else{
-                quantityInput.value = value
-            }
-        }
 
+    //=========== FUNCTIONS =============
+
+    let changeInputPrice = (value)=>{
+        let priceInput = document.querySelector('#price');
+        if(value === ""){
+            priceInput.value = ""
+        }else{
+            priceInput.value = Math.round(value*100)/100
+        }
+    }
+    let changeInputQuantity = (value)=>{
+        let quantityInput = document.querySelector('#quantity');
+        if(value === ""){
+            quantityInput.value = ""
+        }else{
+            quantityInput.value = value
+        }
+    }
+
+
+    window.onload = ()=>{
+
+        // ============== ELEMENTS DU DOM ============
+        let addButton = document.querySelector('.btn-main');
+        let errorQuantity = document.querySelector(".error-quantity");
+        let errorSelect = document.querySelector(".error-select");
+        let errorValue = document.querySelector(".error-value");
+        let priceInput = document.querySelector('#price');
+        let cryptoSelect = document.querySelector('#crypto');
+        let quantityInput = document.querySelector('#quantity');
+
+
+        //=============== INIT =================
+        let cryptoValue = ""
+        priceInput.value = "";
+        quantityInput.value = "";
+        cryptoSelect.selectedIndex = 0;
+
+
+        // ============ EVENTS =================
         cryptoSelect.addEventListener('change',(e)=>{
+            errorQuantity.innerText = '' ;
+            errorSelect.innerText = '' ;
+            errorValue.innerText = '';
             quantityInput.value = "";
             priceInput.value = "";
             if( cryptoSelect.value !== ""){
@@ -77,6 +105,13 @@
                 quantityInput.value="";
                 return
             }
+            if ( isNaN(quantityInput.value) ){
+                errorQuantity.innerText = "La quantité doit être un chiffre valide";
+                addButton.disabled = true;
+            }else{
+                errorQuantity.innerText = "";
+                addButton.disabled = false;
+            }
             if (quantityInput.value !== ""){
                changeInputPrice(quantityInput.value * cryptoValue);
             }else{
@@ -88,6 +123,13 @@
             if(cryptoSelect.value === ""){
                 priceInput.value="";
                 return
+            }
+            if ( isNaN(priceInput.value) ){
+                errorValue.innerText = "La valeur doit être un chiffre valide";
+                addButton.disabled = true;
+            }else{
+                errorValue.innerText = "";
+                addButton.disabled = false;
             }
             if (e.target.value !== ""){
                 changeInputQuantity(e.target.value / cryptoValue);

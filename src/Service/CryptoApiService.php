@@ -35,10 +35,14 @@ class CryptoApiService extends AbstractController
                     $crypto['symbol'] = $cryptoOwned->getSymbol() ;
                     $crypto['title'] = $cryptoOwned->getTitle() ;
                     $crypto['logoLink'] = $cryptoOwned->getLogoLink() ;
-                    $crypto['totalValueSpent'] = $cryptoOwned->getTotalSpent();
-                    $crypto['totalValueNow'] = $cryptoDownloaded['quote']['EUR']['price'] * $cryptoOwned->getTotalQuantity() ;
+                    $crypto['totalQuantity'] = $cryptoOwned->getTotalQuantity();
+                    $crypto['unitValueNow'] = $cryptoDownloaded['quote']['EUR']['price'];
                     $totalValueNow = $cryptoOwned->getTotalQuantity() * $cryptoDownloaded['quote']['EUR']['price'];
                     $buyTotalValue = $cryptoOwned->getTotalSpent();
+                    $crypto['totalValueSpent'] = $buyTotalValue;
+                    $crypto['totalValueNow'] = $totalValueNow ;
+
+                    $crypto['diff'] = $totalValueNow - $buyTotalValue;
                     $amount += $totalValueNow - $buyTotalValue;
                     $filteredCryptos['cryptos'][] = $crypto;
                 }
