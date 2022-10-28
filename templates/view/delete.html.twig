@@ -4,7 +4,7 @@
 
 {% block body %}
     <header class="justify-content-start align-items-center">
-        <a href="{{ path('app_home') }}" class="close-btn"><i class="fa-solid fa-xmark"></i></a>
+        <a href="{{ path('app_home') }}" class="close-btn link"><i class="fa-solid fa-xmark"></i></a>
         <h1>Supprimer un montant</h1>
     </header>
     <main>
@@ -50,7 +50,7 @@
 {% endblock %}
 {% block customJS%}
     <script>
-        //=========== FUNCTIONs =============
+        //=========== FUNCTIONS =============
         let changeInputPrice = (value)=>{
             let priceInput = document.querySelector('#price');
             if(value === ''){
@@ -101,12 +101,12 @@
                 quantityInput.value = '';
                 priceInput.value = '';
                 if( cryptoSelect.value !== ''){
-                    let unitprice = parseFloat(document.querySelector('#'+ cryptoSelect.value).dataset['price']);
+                    let unitPrice = parseFloat(document.querySelector('#'+ cryptoSelect.value).dataset['price']);
                     let totalQuantity = parseFloat(document.querySelector('#'+ cryptoSelect.value).dataset['quantity']);
-                    cryptoValue = unitprice ;
+                    cryptoValue = unitPrice ;
                     actualQuantity.innerText =  totalQuantity.toString();
-                    actualValue.innerText =  (unitprice * totalQuantity).toString() + "€" ;
-                    hidden.value = unitprice ;
+                    actualValue.innerText =  (unitPrice * totalQuantity).toString() + "€" ;
+                    hidden.value = unitPrice ;
                 }
             })
             quantityInput.addEventListener('input',()=>{
@@ -115,20 +115,20 @@
                     quantityInput.value='';
                     return
                 }
-                if( quantityInput.value > parseFloat(actualQuantity.innerText) ){
-                    errorQuantity.innerText = "La quantité ne peut dépasser le stock";
+                let message = "";
+                if( (quantityInput.value > parseFloat(actualQuantity.innerText)) ||  isNaN(quantityInput.value) ){
+                    if(quantityInput.value > parseFloat(actualQuantity.innerText)){
+                        message = "La quantité ne peut dépasser le stock"
+                    }else{
+                        message = "La quantité doit être un chiffre valide"
+                    }
                     deleteButton.disabled = true;
                 }else{
-                    errorQuantity.innerText = "";
+                    message = "";
                     deleteButton.disabled = false;
                 }
-                if ( isNaN(quantityInput.value) ){
-                    errorQuantity.innerText = "La quantité doit être un chiffre valide";
-                    deleteButton.disabled = true;
-                }else{
-                    errorQuantity.innerText = "";
-                    deleteButton.disabled = false;
-                }
+                errorQuantity.innerText = message;
+
                 if (quantityInput.value !== ''){
                     changeInputPrice(quantityInput.value * cryptoValue);
                 }else{
@@ -141,20 +141,20 @@
                     priceInput.value='';
                     return
                 }
-                if( priceInput.value > parseFloat(actualValue.innerText) ){
-                    errorValue.innerText = "La valeur ne peut dépasser le stock";
+                let message = "";
+                if( (priceInput.value > parseFloat(actualValue.innerText)) ||  isNaN(priceInput.value) ){
+                    if(priceInput.value > parseFloat(actualValue.innerText)){
+                        message = "La quantité ne peut dépasser le stock"
+                    }else{
+                        message = "La quantité doit être un chiffre valide"
+                    }
                     deleteButton.disabled = true;
                 }else{
-                    errorValue.innerText = "";
+                    message = "";
                     deleteButton.disabled = false;
                 }
-                if ( isNaN(priceInput.value) ){
-                    errorValue.innerText = "La valeur doit être un chiffre valide";
-                    deleteButton.disabled = true;
-                }else{
-                    errorValue.innerText = "";
-                    deleteButton.disabled = false;
-                }
+                errorValue.innerText = message;
+
                 if (e.target.value !== ''){
                     changeInputQuantity(e.target.value / cryptoValue);
 

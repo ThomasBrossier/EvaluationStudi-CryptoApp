@@ -1,20 +1,26 @@
 /* ============== PRINCIPAL ======================*/
-
+@font-face{
+  font-family : 'AkzidenzGroteskBQ';
+  src : url('./fonts/AkzidenzGroteskBQ-Bold.ttf') format('truetype');
+}
 body {
     background-color: #100f0f;
     font-family: 'Roboto', sans-serif;
     box-sizing: border-box;
     min-height: 100vh;
     width: 100%;
-  display: flex;
-  flex-flow: column nowrap;
+    display: flex;
+    flex-flow: column nowrap;
 }
 body,h1,h2,h3,h4,a{
-  color: white;
+  color: #efefef ;
+
   margin: 0;
   padding: 0;
 }
-
+h1,h2,h3,h4,h5,h6{
+  font-weight: bold;
+}
 header{
   flex: 1;
   display: flex;
@@ -31,6 +37,9 @@ header{
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+  .logo{
+    font-family: AkzidenzGroteskBQ ;
   }
 }
 main{
@@ -56,19 +65,23 @@ main{
 }
 
 .close-btn,.add-btn{
-  color: white;
+  color: #efefef;
   width: 50px;
   height: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
-  text-decoration: none;
 }
 .close-btn i,.add-btn i{
   font-size: 1.5rem;
 }
 
-
+.link{
+  text-decoration: none;
+  &:hover{
+    color : #1fc36c;
+  }
+}
 /* ============== PAGE AJOUTER/SUPPRIMER UNE CRYPTO ======================*/
 
 

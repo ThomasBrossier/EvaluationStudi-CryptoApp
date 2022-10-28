@@ -4,15 +4,15 @@
 
 {% block body %}
     <header class="justify-content-between px-4">
-        <h1>Crypto tracker</h1>
+        <h1 class="logo">Crypto Tracker</h1>
         <div class="btn-bloc">
-            <a href="{{path('app_delete')}}" class="add-btn mx-2"><i class="fa-solid fa-pen"></i></a>
-            <a href="{{path('app_add')}}" class="add-btn"><i class="fa-solid fa-plus"></i></a>
+            <a href="{{path('app_delete')}}" class="add-btn mx-2 link"><i class="fa-solid fa-pen"></i></a>
+            <a href="{{path('app_add')}}" class="add-btn link"><i class="fa-solid fa-plus"></i></a>
         </div>
     </header>
     <main>
         <div class="amount">
-            <span>{{amount > 0 ? "+ " : ""}} {{ amount|round(2,'ceil') }} €</span>
+            <a class="link" href="{{path('app_graph')}}"><span>{{amount > 0 ? "+ " : ""}} {{ amount|round(2,'ceil') }} €</span></a>
         </div>
         <div class="board">
             {% include 'view/elements/_flashes.html.twig' %}

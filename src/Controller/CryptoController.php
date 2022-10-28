@@ -3,23 +3,29 @@
 namespace App\Controller;
 
 use App\Entity\CryptoMoney;
+use App\Entity\Result;
 use App\Entity\Transaction;
 use App\Repository\CryptoMoneyRepository;
+use App\Repository\ResultRepository;
 use App\Service\CryptoApiService;
+use App\Service\SaveAmountService;
 use Exception;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
+use Symfony\UX\Chartjs\Model\Chart;
 
 #[Route('/', name: 'app_')]
 class CryptoController extends AbstractController
 {
     #[Route('/', name: 'home')]
-    public function index(Request $request, CryptoApiService $api, CryptoMoneyRepository $cryptoMoneyRepository,PaginatorInterface $paginator): Response
+    public function index(Request $request, CryptoApiService $api, CryptoMoneyRepository $cryptoMoneyRepository, SaveAmountService $saveAmount): Response
     {
         $cryptoMoneys =  $api->getCryptosFiltered( $cryptoMoneyRepository->findAllWithTransactions() );
+        $saveAmount->saveAmount();
         return $this->render('view/home.html.twig', [
             'controller_name' => 'CryptoController',
             'cryptos' =>  $cryptoMoneys['cryptos'] ,
@@ -114,10 +120,34 @@ class CryptoController extends AbstractController
 
 
     #[Route('/progression', name: 'graph')]
-    public function graph(): Response
+    public function graph(ResultRepository$resultRepository, ChartBuilderInterface $chartBuilder): Response
     {
+        $dailyResults = $resultRepository->findAll();
+        $labels = [];
+        $data = [];
+        $chart = $chartBuilder->createChart(Chart::TYPE_LINE);
+        /*dd($dailyResults);*/
+        foreach ($dailyResults as $dailyResult) {
+            $labels[] = $dailyResult->getCreatedAt()->format('d/m');
+            $data[] = $dailyResult->getAmount();
+        }
+        $chart->setData([
+            'labels' => $labels ,
+            'datasets' => [
+                [
+                    'label' => 'Résultat des investissements par jour',
+                    'backgroundColor' => 'rgb(239, 239, 239)',
+                    'borderColor' => 'rgb(31, 195, 108)',
+                    'data' => $data,
+                ],
+            ],
+        ]);
+
+        $chart->setOptions([/* ... */]);
+
         return $this->render('view/graph.html.twig', [
             'controller_name' => 'CryptoController',
+            'chart' => $chart,
 
         ]);
     }

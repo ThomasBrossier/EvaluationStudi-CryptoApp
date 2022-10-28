@@ -1,7 +1,21 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Supprimer une crypto{% endblock %}
+{% block title %}Vos gains{% endblock %}
 
 {% block body %}
+    <header class="justify-content-start align-items-center">
+        <a href="{{ path('app_home') }}" class="close-btn link"><i class="fa-solid fa-xmark"></i></a>
+        <h1>Vos gains</h1>
+    </header>
+    <main>
+        <div class="board">
+            {% include 'view/elements/_flashes.html.twig' %}
+            {# You can pass HTML attributes as a second argument to add them on the <canvas> tag #}
+            {{ render_chart(chart, {'class': 'my-chart'}) }}
+        </div>
+    </main>
+
+{% endblock %}
+{% block customJS%}
 
 {% endblock %}
