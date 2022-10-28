@@ -24,12 +24,21 @@ class CryptoController extends AbstractController
     #[Route('/', name: 'home')]
     public function index(Request $request, CryptoApiService $api, CryptoMoneyRepository $cryptoMoneyRepository, SaveAmountService $saveAmount): Response
     {
-        $cryptoMoneys =  $api->getCryptosFiltered( $cryptoMoneyRepository->findAllWithTransactions() );
-        $saveAmount->saveAmount();
+        $cryptosOwned = $cryptoMoneyRepository->findAllWithTransactions();
+
+        if($cryptosOwned){
+            $cryptoMoneys =  $api->getCryptosFiltered( $cryptosOwned );
+            $amount = $cryptoMoneys['amount'];
+            $cryptoMoneys = $cryptoMoneys['cryptos'];
+        }else{
+            $cryptoMoneys = [] ;
+            $amount = "" ;
+        }
+
         return $this->render('view/home.html.twig', [
             'controller_name' => 'CryptoController',
-            'cryptos' =>  $cryptoMoneys['cryptos'] ,
-            'amount' => $cryptoMoneys['amount']
+            'cryptos' =>  $cryptoMoneys,
+            'amount' => $amount
         ]);
     }
 
@@ -81,40 +90,45 @@ class CryptoController extends AbstractController
     public function deleteView(Request $request, CryptoApiService $api, CryptoMoneyRepository $cryptoMoneyRepository): Response
     {
 
-        $cryptoMoneys  =  $api->getCryptosFiltered( $cryptoMoneyRepository->findAllWithTransactions() );
-        if($request->request->get('crypto')){
-
-            try{
-                $choices = $request->request;
-                $quantity = $choices->get('quantity');
-                $unitPrice = $choices->get('unitPrice');
-                if(!is_numeric($quantity)){
-                    throw new \InvalidArgumentException( "La quantité doit être un chiffre");
+        $cryptosOwned = $cryptoMoneyRepository->findAllWithTransactions();
+        if($cryptosOwned){
+            $cryptoMoneys =  $api->getCryptosFiltered( $cryptosOwned )['cryptos'];
+            if($request->request->get('crypto')){
+                try{
+                    $choices = $request->request;
+                    $quantity = $choices->get('quantity');
+                    $unitPrice = $choices->get('unitPrice');
+                    if(!is_numeric($quantity)){
+                        throw new \InvalidArgumentException( "La quantité doit être un chiffre");
+                    }
+                    if( !is_numeric($unitPrice) || !is_numeric($unitPrice) ){
+                        throw new \InvalidArgumentException("La valeur doit être un chiffre");
+                    }
+                    $symbol = $choices->get('crypto');
+                    $crypto = $cryptoMoneyRepository->findOneBy(['symbol'=> $symbol ]);
+                    $crypto->getTotalQuantity();
+                    $transaction = new Transaction();
+                    $transaction->setQuantity( $quantity )
+                        ->setUnitPrice($unitPrice)
+                        ->setCreatedAt(new \DateTimeImmutable())
+                        ->setType('sale');
+                    $crypto->addTransaction($transaction);
+                    $cryptoMoneyRepository->save($crypto,true);
+                    $this->addFlash('success', 'La vente a bien été effectuée');
+                    return $this->redirectToRoute('app_delete',['cryptos' => $cryptoMoneys]);
+                } catch ( Exception $e){
+                    $this->addFlash('error', $e->getMessage());
+                    return $this->redirectToRoute('app_delete',['cryptos' => $cryptoMoneys]);
                 }
-                if( !is_numeric($unitPrice) || !is_numeric($unitPrice) ){
-                    throw new \InvalidArgumentException("La valeur doit être un chiffre");
-                }
-                $symbol = $choices->get('crypto');
-                $crypto = $cryptoMoneyRepository->findOneBy(['symbol'=> $symbol ]);
-                $crypto->getTotalQuantity();
-                $transaction = new Transaction();
-                $transaction->setQuantity( $quantity )
-                    ->setUnitPrice($unitPrice)
-                    ->setCreatedAt(new \DateTimeImmutable())
-                    ->setType('sale');
-                $crypto->addTransaction($transaction);
-                $cryptoMoneyRepository->save($crypto,true);
-                $this->addFlash('success', 'La vente a bien été effectuée');
-                return $this->redirectToRoute('app_delete',['cryptos' => $cryptoMoneys['cryptos']]);
-            } catch ( Exception $e){
-                $this->addFlash('error', $e->getMessage());
-                return $this->redirectToRoute('app_delete',['cryptos' => $cryptoMoneys['cryptos']]);
             }
+        }else{
+            $cryptoMoneys = [];
         }
+
 
         return $this->render('view/delete.html.twig', [
             'controller_name' => 'CryptoController',
-            'cryptos' => $cryptoMoneys['cryptos'],
+            'cryptos' => $cryptoMoneys,
         ]);
     }
 
@@ -123,6 +137,11 @@ class CryptoController extends AbstractController
     public function graph(ResultRepository$resultRepository, ChartBuilderInterface $chartBuilder): Response
     {
         $dailyResults = $resultRepository->findAll();
+        if(!$dailyResults){
+            $dontShow = true;
+        }else{
+            $dontShow = false;
+        }
         $labels = [];
         $data = [];
         $chart = $chartBuilder->createChart(Chart::TYPE_LINE);
@@ -148,7 +167,7 @@ class CryptoController extends AbstractController
         return $this->render('view/graph.html.twig', [
             'controller_name' => 'CryptoController',
             'chart' => $chart,
-
+            'dontShow' => $dontShow
         ]);
     }
 

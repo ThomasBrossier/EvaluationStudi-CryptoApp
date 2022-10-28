@@ -3,16 +3,18 @@
 namespace App\Tests\Controller;
 
 use App\Entity\CryptoMoney;
+use App\Entity\Result;
 use App\Entity\Transaction;
 use App\Repository\CryptoMoneyRepository;
+use App\Repository\ResultRepository;
 use App\Repository\TransactionRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpClient\Exception\ClientException;
 
 class CryptoControllerTest extends WebTestCase
 {
-
-    public function testHomePage(): void
+    //====================== HOME PAGE ========================
+    public function testHomePageWithoutCryptos(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/');
@@ -20,13 +22,37 @@ class CryptoControllerTest extends WebTestCase
         $this->assertSelectorExists('.noCrypto');
         $this->assertSelectorExists('.transaction_row');
         $this->assertSelectorExists('.add-btn');
-        $this->assertSelectorTextContains('.amount > span',"€");
+        $this->assertSelectorTextContains('.amount > .link > span',"€");
+    }
+
+    public function testHomePageWithCryptos(): void
+    {
+        $client = static::createClient();
+        $cryptoMoneyRepository = static::getContainer()->get(CryptoMoneyRepository::class);
+        $crypto = new CryptoMoney();
+        $crypto->setSymbol('BTC')
+            ->setLogoLink('https://s2.coinmarketcap.com/static/img/coins/64x64/1.png')
+            ->setTitle('Bitcoin');
+        $transaction = new Transaction();
+        $transaction->setCreatedAt(new \DateTimeImmutable())
+            ->setUnitPrice(10000)
+            ->setQuantity(4)
+            ->setType('purchase');
+        $crypto->addTransaction($transaction);
+        $cryptoMoneyRepository->save($crypto, true);
+
+        $crawler = $client->request('GET', '/');
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('.transaction_row');
+        $this->assertSelectorExists('.add-btn');
+        $this->assertSelectorTextContains('.amount > .link > span',"€");
+
     }
 
 
 
-    /*====================== ADD ROUTE========================*/
-    /*Teste la vue de la page d'ajout*/
+    //====================== ADD ROUTE========================
+    //Teste la vue de la page d'ajout
     public function testAddPage(): void
     {
         $client = static::createClient();
@@ -43,7 +69,7 @@ class CryptoControllerTest extends WebTestCase
     }
 
 
-    /*Teste l'ajout d'une crypto qui est déjà dans la base de données*/
+    //Teste l'ajout d'une crypto qui est déjà dans la base de données
     public function testAddFunctionalityKnownCrypto(): void
     {
         $client = static::createClient();
@@ -59,7 +85,7 @@ class CryptoControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful($response);
     }
 
-    /*Teste l'ajout d'une crypto qui n'est pas dans  la base de données*/
+    //Teste l'ajout d'une crypto qui n'est pas dans  la base de données
     public function testAddFunctionalityUnknownCrypto(): void
     {
         $client = static::createClient();
@@ -76,7 +102,7 @@ class CryptoControllerTest extends WebTestCase
     }
 
 
-    /*Teste si une erreur apparait en cas de quantité erronée*/
+    // Teste si une erreur apparait en cas de quantité erronée
     public function testAddFunctionalityQuantityError(): void
     {
         $client = static::createClient();
@@ -96,29 +122,23 @@ class CryptoControllerTest extends WebTestCase
 
 
 
-    /*====================== DELETE ROUTE========================*/
+    //====================== DELETE ROUTE========================
 
-    /*Teste la vue de la page de suppression */
+    //Teste la vue de la page de suppression
     public function testDeletePage(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/supprimer-une-crypto');
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorExists('form');
-        $this->assertSelectorExists('.form-row');
         $this->assertSelectorExists('.close-btn');
-        $this->assertSelectorExists('.btn-main');
-        $this->assertSelectorExists('#crypto');
-        $this->assertSelectorExists('#quantity');
-        $this->assertSelectorExists('#price');
+        $this->assertSelectorExists('.noCrypto');
         $this->assertSelectorTextSame('h1','Supprimer un montant');
     }
 
-    /*Teste si la suppression se fait sur la base de données*/
+    //Teste si la suppression se fait sur la base de données
     public function testDeleteFunctionality(): void
     {
         $client = static::createClient();
-        $crawler = $client->request('GET', '/supprimer-une-crypto');
         $cryptoMoneyRepository = static::getContainer()->get(CryptoMoneyRepository::class);
         $transactionRepository = static::getContainer()->get(TransactionRepository::class);
         $crypto = $cryptoMoneyRepository->findBy(['symbol' => "BTC"]);
@@ -141,6 +161,7 @@ class CryptoControllerTest extends WebTestCase
             ->setType('purchase');
         $crypto->addTransaction($transaction);
         $cryptoMoneyRepository->save($crypto,true);
+        $crawler = $client->request('GET', '/supprimer-une-crypto');
         $form = $crawler->selectButton('Supprimer')->form();
         $form['quantity'] = 2.0;
         $form['crypto'] = 'BTC';
@@ -151,12 +172,11 @@ class CryptoControllerTest extends WebTestCase
         $this->assertEquals(2,$getcrypto->getTotalQuantity());
     }
 
-    /*Teste si l'erreur apparait en cas de quantité erronée'*/
+    //Teste si l'erreur apparait en cas de quantité erronée'
     public function testDeleteFunctionalityQuantityError(): void
     {
         $client = static::createClient();
         $client->followRedirects();
-        $crawler = $client->request('GET', '/supprimer-une-crypto');
         $cryptoMoneyRepository = static::getContainer()->get(CryptoMoneyRepository::class);
         $transactionRepository = static::getContainer()->get(TransactionRepository::class);
         $crypto = $cryptoMoneyRepository->findBy(['symbol' => "BTC"]);
@@ -179,6 +199,7 @@ class CryptoControllerTest extends WebTestCase
             ->setType('purchase');
         $crypto->addTransaction($transaction);
         $cryptoMoneyRepository->save($crypto, true);
+        $crawler = $client->request('GET', '/supprimer-une-crypto');
         $form = $crawler->selectButton('Supprimer')->form();
         $form['quantity'] = "abc";
         $form['crypto'] = 'BTC';
@@ -190,12 +211,11 @@ class CryptoControllerTest extends WebTestCase
         $this->assertSelectorExists('.alert-danger');
     }
 
-    /*Teste si l'erreur apparait en cas de valeur erronée'*/
+   //Teste si l'erreur apparait en cas de valeur erronée'
     public function testDeleteFunctionalityPriceError(): void
     {
         $client = static::createClient();
         $client->followRedirects();
-        $crawler = $client->request('GET', '/supprimer-une-crypto');
         $cryptoMoneyRepository = static::getContainer()->get(CryptoMoneyRepository::class);
         $transactionRepository = static::getContainer()->get(TransactionRepository::class);
         $crypto = $cryptoMoneyRepository->findBy(['symbol' => "BTC"]);
@@ -218,6 +238,7 @@ class CryptoControllerTest extends WebTestCase
             ->setType('purchase');
         $crypto->addTransaction($transaction);
         $cryptoMoneyRepository->save($crypto, true);
+        $crawler = $client->request('GET', '/supprimer-une-crypto');
         $form = $crawler->selectButton('Supprimer')->form();
         $form['quantity'] = 10;
         $form['crypto'] = 'BTC';
@@ -227,5 +248,29 @@ class CryptoControllerTest extends WebTestCase
         $response = $client->getResponse();
         $this->assertResponseIsSuccessful($response);
         $this->assertSelectorExists('.alert-danger');
+    }
+
+
+    //====================== HOME PAGE ========================
+    public function testGraphPageWithoutCryptos(): void
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/progression');
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('.transaction_row');
+        $this->assertSelectorExists('.noCrypto');
+    }
+
+    public function testGraphPageWithCryptos(): void
+    {
+        $client = static::createClient();
+        $resultRepository = static::getContainer()->get(ResultRepository::class);
+        $result = new Result();
+        $result->setAmount(2000)
+            ->setCreatedAt(new \DateTimeImmutable());
+        $resultRepository->save($result, true);
+        $crawler = $client->request('GET', '/progression');
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists(".my-chart");
     }
 }

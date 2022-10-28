@@ -5,12 +5,10 @@ namespace App\Tests\Repository;
 use App\Entity\Result;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Hautelook\AliceBundle\PhpUnit\RefreshDatabaseTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ResultRepositoryTest extends KernelTestCase
 {
-    use RefreshDatabaseTrait;
     /**
      * @var EntityManager
      */
@@ -36,14 +34,14 @@ class ResultRepositoryTest extends KernelTestCase
 
     public function testFindAll(): void
     {
-
         $result = $this->getEntity();
         $repo = $this->entityManager->getRepository(Result::class);
         $repo->save($result,true);
         $results = $repo->findAll();
-
         $this->assertCount(1,$results);
         $repo->remove($result,true);
+        $results = $repo->findAll();
+        $this->assertCount(0,$results);
     }
 
     protected function tearDown(): void

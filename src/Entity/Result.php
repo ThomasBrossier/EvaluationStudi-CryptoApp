@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ResultRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ResultRepository::class)]
 class Result
@@ -17,6 +18,11 @@ class Result
     private ?\DateTimeImmutable $CreatedAt = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank]
+    #[Assert\Type(
+        type: 'float',
+        message: 'La valeur {{ value }} n\'est pas valide. Il faut un nombre decimal.',
+    )]
     private ?float $amount = null;
 
     public function getId(): ?int

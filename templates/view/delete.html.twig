@@ -10,6 +10,8 @@
     <main>
         <div class="board">
             {% include 'view/elements/_flashes.html.twig' %}
+
+            {% if cryptos is not empty %}
             <form method="POST" action="{{ path('app_delete') }}" class="" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette valeur ?');" >
                 <div>
                     <div class="form-row">
@@ -46,6 +48,11 @@
                 <input id="hidden" type="hidden" name="unitPrice">
                 <button class="btn btn-main" type="submit">Supprimer</button>
             </form>
+            {% else %}
+                <div class="transaction_row"  >
+                    <span class="noCrypto">Pas de Cryptos</span>
+                </div>
+            {% endif %}
         </div>
     </main>
 

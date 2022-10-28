@@ -5,12 +5,10 @@ namespace App\Tests\Repository;
 use App\Entity\CryptoMoney;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Hautelook\AliceBundle\PhpUnit\RefreshDatabaseTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class CryptoMoneyRepositoryTest extends KernelTestCase
 {
-    use RefreshDatabaseTrait;
     /**
      * @var EntityManager
      */

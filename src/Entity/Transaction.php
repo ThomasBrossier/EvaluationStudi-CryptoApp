@@ -34,7 +34,7 @@ class Transaction
     #[Assert\Positive]
     #[Assert\Type(
         type: 'float',
-        message: 'La valeur {{ value }} n\'est pas valide. Il faut un nombre decimale.',
+        message: 'La valeur {{ value }} n\'est pas valide. Il faut un nombre decimal.',
     )]
     private ?float $unitPrice = null;
 

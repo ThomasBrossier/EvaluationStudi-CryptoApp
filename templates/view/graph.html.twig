@@ -10,8 +10,14 @@
     <main>
         <div class="board">
             {% include 'view/elements/_flashes.html.twig' %}
-            {# You can pass HTML attributes as a second argument to add them on the <canvas> tag #}
-            {{ render_chart(chart, {'class': 'my-chart'}) }}
+            {% if dontShow %}
+                <div class="transaction_row"  >
+                    <span class="noCrypto">Pas de transaction actuellement</span>
+                </div>
+            {% else %}
+                {# You can pass HTML attributes as a second argument to add them on the <canvas> tag #}
+                {{ render_chart(chart, {'class': 'my-chart'}) }}
+            {% endif %}
         </div>
     </main>
 
