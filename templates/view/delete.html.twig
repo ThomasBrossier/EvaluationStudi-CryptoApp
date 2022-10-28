@@ -18,7 +18,9 @@
                             <select id="crypto" class="form-select" name="crypto" required>
                                 <option value="">Selectionnez une crypto</option>
                                 {% for crypto in cryptos %}
-                                    <option id={{crypto.symbol}} value="{{crypto.symbol}}" data-price="{{crypto.unitValueNow}}" data-quantity="{{crypto.totalQuantity}}" >{{crypto.symbol}} -<span>{{crypto.title}}</span> <span>( ≃{{crypto.unitValueNow|round(2,'ceil')}} €)</span></option>
+                                    {% if crypto.totalQuantity != 0 %}
+                                        <option id={{crypto.symbol}} value="{{crypto.symbol}}" data-price="{{crypto.unitValueNow}}" data-quantity="{{crypto.totalQuantity}}" >{{crypto.symbol}} -<span>{{crypto.title}}</span> <span>( ≃{{crypto.unitValueNow|round(2,'ceil')}} €)</span></option>
+                                    {% endif%}
                                 {% endfor %}
                             </select>
                         </div>
