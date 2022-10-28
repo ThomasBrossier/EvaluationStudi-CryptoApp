@@ -69,7 +69,6 @@
         }
 
         window.onload = ()=>{
-
             // ============== ELEMENTS DU DOM ============
             let hidden = document.querySelector('#hidden');
             let deleteButton = document.querySelector('.btn-main');
@@ -91,6 +90,8 @@
 
 
             // ============ EVENTS =================
+
+                // Contrôle l'événement de changement sur la crypto selectionnée
             cryptoSelect.addEventListener('change',(e)=>{
                 hidden.value = "";
                 errorQuantity.innerText = '' ;
@@ -109,6 +110,8 @@
                     hidden.value = unitPrice ;
                 }
             })
+
+            // Contrôle l'événement de changement sur la quantité saisie
             quantityInput.addEventListener('input',()=>{
 
                 if(cryptoSelect.value === ''){
@@ -136,6 +139,8 @@
                 }
 
             })
+
+            // Contrôle l'événement de changement sur la valeur saisie
             priceInput.addEventListener('input',(e)=>{
                 if(cryptoSelect.value === ''){
                     priceInput.value='';

@@ -89,6 +89,8 @@
 
 
         // ============ EVENTS =================
+
+            // Contrôle l'événement de changement sur la crypto selectionnée
         cryptoSelect.addEventListener('change',(e)=>{
             errorQuantity.innerText = '' ;
             errorSelect.innerText = '' ;
@@ -100,6 +102,7 @@
 
             }
         })
+        // Contrôle l'événement de changement sur la quantité saisie
         quantityInput.addEventListener('input',()=>{
             if(cryptoSelect.value === ""){
                 quantityInput.value="";
@@ -119,6 +122,7 @@
             }
 
         })
+        // Contrôle l'événement de changement sur la valeur saisie
         priceInput.addEventListener('input',(e)=>{
             if(cryptoSelect.value === ""){
                 priceInput.value="";
