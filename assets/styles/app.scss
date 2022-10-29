@@ -1,4 +1,7 @@
 /* ============== PRINCIPAL ======================*/
+$media-medium-screen: "screen and (min-width: 768px)";
+$media-large-screen: "screen and (min-width: 768px)";
+
 @font-face{
   font-family : 'AkzidenzGroteskBQ';
   src : url('./fonts/AkzidenzGroteskBQ-Bold.ttf') format('truetype');
@@ -22,11 +25,15 @@ h1,h2,h3,h4,h5,h6{
   font-weight: bold;
 }
 header{
-  flex: 1;
+  height: 70px;
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
   border-bottom: 1px solid grey;
+  @media #{$media-medium-screen}{
+    width: 60%;
+    align-self: center;
+  }
   h1{
     font-size: 1.4rem;
     flex :2;
@@ -47,6 +54,10 @@ main{
   flex-flow: column nowrap;
   justify-content: flex-start;
   flex: 11;
+  @media #{$media-medium-screen}{
+    width: 60%;
+    align-self: center;
+  }
 }
 .board{
   flex: 5;
@@ -54,11 +65,15 @@ main{
   justify-content: space-between;
 }
 .btn-main{
-    height: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
-    background-color: #ffffff;
+  background-color: #ffffff;
+  @media #{$media-medium-screen}{
+    width: 40%;
+    align-self: center;
+  }
   &:hover{
     background-color: #585757;
   }
@@ -150,7 +165,7 @@ form{
     }
   }
   .amount{
-    flex: 1;
+    height: 150px;
     max-width: 100vw;
     display: flex;
     align-items: center;
