@@ -2,10 +2,8 @@
 
 namespace App\Service;
 
-use App\Repository\CryptoMoneyRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class CryptoApiService extends AbstractController
 {
@@ -51,20 +49,7 @@ class CryptoApiService extends AbstractController
         $filteredCryptos['amount'] = $amount;
         return $filteredCryptos;
     }
- /*    public function getAMountNow( array $cryptosDownloaded, array $cryptosOwned ) : float
-    {
-        $amount = 0 ;
-        foreach ($cryptosOwned as $cryptoOwned){
-            foreach ($cryptosDownloaded as $cryptoDownloaded){
-                if($cryptoDownloaded['symbol'] === $cryptoOwned->getSymbol()){
-                    $totalValueNow = $cryptoOwned->getTotalQuantity() * $cryptoDownloaded['quote']['EUR']['price'];
-                    $buyTotalValue = $cryptoOwned->getTotalSpent();
-                    $amount += $totalValueNow - $buyTotalValue;
-                }
-            }
-        }
-        return $amount;
-    }*/
+
     public function getCryptosBySymbol($symbol)
     {
 
