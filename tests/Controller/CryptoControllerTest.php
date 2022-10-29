@@ -5,18 +5,24 @@ namespace App\Tests\Controller;
 use App\Entity\CryptoMoney;
 use App\Entity\Result;
 use App\Entity\Transaction;
+use App\Entity\User;
 use App\Repository\CryptoMoneyRepository;
 use App\Repository\ResultRepository;
 use App\Repository\TransactionRepository;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpClient\Exception\ClientException;
 
 class CryptoControllerTest extends WebTestCase
 {
     //====================== HOME PAGE ========================
     public function testHomePageWithoutCryptos(): void
     {
+
         $client = static::createClient();
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $testUser = $userRepository->findOneBy(['email' => 'test@test.fr']);
+        $client->loginUser($testUser);
+
         $crawler = $client->request('GET', '/');
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('.noCrypto');
@@ -28,6 +34,9 @@ class CryptoControllerTest extends WebTestCase
     public function testHomePageWithCryptos(): void
     {
         $client = static::createClient();
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $testUser = $userRepository->findOneBy(['email' => 'test@test.fr']);
+        $client->loginUser($testUser);
         $cryptoMoneyRepository = static::getContainer()->get(CryptoMoneyRepository::class);
         $crypto = new CryptoMoney();
         $crypto->setSymbol('BTC')
@@ -56,6 +65,9 @@ class CryptoControllerTest extends WebTestCase
     public function testAddPage(): void
     {
         $client = static::createClient();
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $testUser = $userRepository->findOneBy(['email' => 'test@test.fr']);
+        $client->loginUser($testUser);
         $crawler = $client->request('GET', '/ajouter-une-crypto');
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('form');
@@ -73,6 +85,10 @@ class CryptoControllerTest extends WebTestCase
     public function testAddFunctionalityKnownCrypto(): void
     {
         $client = static::createClient();
+
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $testUser = $userRepository->findOneBy(['email' => 'test@test.fr']);
+        $client->loginUser($testUser);
         $crawler = $client->request('GET', '/ajouter-une-crypto');
 
         $form = $crawler->selectButton('Ajouter')->form();
@@ -89,6 +105,9 @@ class CryptoControllerTest extends WebTestCase
     public function testAddFunctionalityUnknownCrypto(): void
     {
         $client = static::createClient();
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $testUser = $userRepository->findOneBy(['email' => 'test@test.fr']);
+        $client->loginUser($testUser);
         $crawler = $client->request('GET', '/ajouter-une-crypto');
 
         $form = $crawler->selectButton('Ajouter')->form();
@@ -106,6 +125,9 @@ class CryptoControllerTest extends WebTestCase
     public function testAddFunctionalityQuantityError(): void
     {
         $client = static::createClient();
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $testUser = $userRepository->findOneBy(['email' => 'test@test.fr']);
+        $client->loginUser($testUser);
         $client->followRedirects();
         $crawler = $client->request('GET', '/ajouter-une-crypto');
         $form = $crawler->selectButton('Ajouter')->form();
@@ -128,6 +150,9 @@ class CryptoControllerTest extends WebTestCase
     public function testDeletePage(): void
     {
         $client = static::createClient();
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $testUser = $userRepository->findOneBy(['email' => 'test@test.fr']);
+        $client->loginUser($testUser);
         $crawler = $client->request('GET', '/supprimer-une-crypto');
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('.close-btn');
@@ -139,6 +164,9 @@ class CryptoControllerTest extends WebTestCase
     public function testDeleteFunctionality(): void
     {
         $client = static::createClient();
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $testUser = $userRepository->findOneBy(['email' => 'test@test.fr']);
+        $client->loginUser($testUser);
         $cryptoMoneyRepository = static::getContainer()->get(CryptoMoneyRepository::class);
         $transactionRepository = static::getContainer()->get(TransactionRepository::class);
         $crypto = $cryptoMoneyRepository->findBy(['symbol' => "BTC"]);
@@ -176,6 +204,9 @@ class CryptoControllerTest extends WebTestCase
     public function testDeleteFunctionalityQuantityError(): void
     {
         $client = static::createClient();
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $testUser = $userRepository->findOneBy(['email' => 'test@test.fr']);
+        $client->loginUser($testUser);
         $client->followRedirects();
         $cryptoMoneyRepository = static::getContainer()->get(CryptoMoneyRepository::class);
         $transactionRepository = static::getContainer()->get(TransactionRepository::class);
@@ -215,6 +246,9 @@ class CryptoControllerTest extends WebTestCase
     public function testDeleteFunctionalityPriceError(): void
     {
         $client = static::createClient();
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $testUser = $userRepository->findOneBy(['email' => 'test@test.fr']);
+        $client->loginUser($testUser);
         $client->followRedirects();
         $cryptoMoneyRepository = static::getContainer()->get(CryptoMoneyRepository::class);
         $transactionRepository = static::getContainer()->get(TransactionRepository::class);
@@ -255,6 +289,9 @@ class CryptoControllerTest extends WebTestCase
     public function testGraphPageWithoutCryptos(): void
     {
         $client = static::createClient();
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $testUser = $userRepository->findOneBy(['email' => 'test@test.fr']);
+        $client->loginUser($testUser);
         $crawler = $client->request('GET', '/progression');
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('.transaction_row');
@@ -264,6 +301,9 @@ class CryptoControllerTest extends WebTestCase
     public function testGraphPageWithCryptos(): void
     {
         $client = static::createClient();
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $testUser = $userRepository->findOneBy(['email' => 'test@test.fr']);
+        $client->loginUser($testUser);
         $resultRepository = static::getContainer()->get(ResultRepository::class);
         $result = new Result();
         $result->setAmount(2000)

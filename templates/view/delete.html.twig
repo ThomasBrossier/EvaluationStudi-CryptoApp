@@ -156,6 +156,9 @@
                     return
                 }
                 let message = "";
+                console.log(priceInput.value)
+                console.log(parseFloat(actualValue.innerText))
+
                 if( (priceInput.value > parseFloat(actualValue.innerText)) ||  isNaN(priceInput.value) ){
                     if(priceInput.value > parseFloat(actualValue.innerText)){
                         message = "La quantité ne peut dépasser le stock"

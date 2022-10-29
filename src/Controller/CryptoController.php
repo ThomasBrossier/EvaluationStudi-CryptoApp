@@ -25,7 +25,11 @@ class CryptoController extends AbstractController
     public function index(Request $request, CryptoApiService $api, CryptoMoneyRepository $cryptoMoneyRepository, SaveAmountService $saveAmount): Response
     {
         $cryptosOwned = $cryptoMoneyRepository->findAllWithTransactions();
-
+        foreach ($cryptosOwned as $key => $cryptoOwned ) {
+            if($cryptoOwned->getTotalQuantity() === 0.0 ){
+                unset($cryptosOwned[$key]);
+            }
+        }
         if($cryptosOwned){
             $cryptoMoneys =  $api->getCryptosFiltered( $cryptosOwned );
             $amount = $cryptoMoneys['amount'];
