@@ -10,7 +10,6 @@ use App\Repository\ResultRepository;
 use App\Service\CryptoApiService;
 use App\Service\SaveAmountService;
 use Exception;
-use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,9 +17,21 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
 
+
+/**
+ * Cette classe représente le controller principal de l'application. c'est lui qui définit les différentes routes.
+ *
+ **/
+
+
 #[Route('/', name: 'app_')]
 class CryptoController extends AbstractController
 {
+
+    /**
+     * La route principale de l'application. Si l'utilisateur n'est pas connecté, il sera redirigé sur la route de connexion.("/login")
+     * Si des cryptos existent dans la base de données, elles sont affichées sinon on renvoie un tableau vide
+     **/
     #[Route('/', name: 'home')]
     public function index(Request $request, CryptoApiService $api, CryptoMoneyRepository $cryptoMoneyRepository, SaveAmountService $saveAmount): Response
     {
@@ -46,6 +57,14 @@ class CryptoController extends AbstractController
         ]);
     }
 
+
+    /**
+     * La route qui permet d'acceder à la page d'ajout de l'application. Si l'utilisateur n'est pas connecté, il sera redirigé sur la route de connexion.("/login")
+     * Nous faisons un appel à une API pour récupérer les crypto et leurs valeurs actuelles. Ces cryptos seront envoyé à la vue.
+     * Si nous détectons une validation d'ajout dans la requête, nous créons la transaction d'achat demandée par l'utilisateur. Dans le cas ou la crypto n'est pas en base de données,
+     * nous là créons également.
+     * Un message de succés ou d'echec est envoyé via "addFlash".
+     **/
     #[Route('/ajouter-une-crypto', name: 'add')]
     public function addView(Request $request, CryptoApiService $api, CryptoMoneyRepository $cryptoMoneyRepository): Response
     {
@@ -89,7 +108,11 @@ class CryptoController extends AbstractController
         ]);
     }
 
-
+    /**
+     * La route qui permet d'acceder à la page de suppression. Si l'utilisateur n'est pas connecté, il sera redirigé sur la route de connexion.("/login")
+     * Si nous avons des cryptos, alors elles sont transmises a la vue avec différentes valeurs.(quantité, valeur d'achat ...)
+     * Si nous détectons une suppression d'ajout dans la requête, nous créons la transaction de vente demandée par l'utilisateur.
+     **/
     #[Route('/supprimer-une-crypto', name: 'delete')]
     public function deleteView(Request $request, CryptoApiService $api, CryptoMoneyRepository $cryptoMoneyRepository): Response
     {
@@ -137,6 +160,12 @@ class CryptoController extends AbstractController
     }
 
 
+
+    /**
+     * La route qui permet d'accéder à la page de representation graphique. Si l'utilisateur n'est pas connecté, il sera redirigé sur la route de connexion.("/login")
+     * Si nous avons des cryptos, alors un graph est crée puis transmit à la vue. Sinon nous indiquons à la vue de ne rien afficher.
+     *
+     **/
     #[Route('/progression', name: 'graph')]
     public function graph(ResultRepository$resultRepository, ChartBuilderInterface $chartBuilder): Response
     {

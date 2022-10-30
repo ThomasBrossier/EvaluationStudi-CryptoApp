@@ -7,6 +7,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * Cette classe permet de faire le lien entre l'entité CryptoMoney et la base de données
  * @extends ServiceEntityRepository<CryptoMoney>
  *
  * @method CryptoMoney|null find($id, $lockMode = null, $lockVersion = null)
@@ -21,6 +22,12 @@ class CryptoMoneyRepository extends ServiceEntityRepository
         parent::__construct($registry, CryptoMoney::class);
     }
 
+    /**
+     * Sauvegarde une crypto donnée dans la base de données
+     * @param CryptoMoney $entity
+     * @param bool $flush
+     * @return void
+     */
     public function save(CryptoMoney $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
@@ -30,6 +37,12 @@ class CryptoMoneyRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * Supprime une crypto de la base de donnée. (ATTENTION l'application en l'état ne supprime jamais une crypto. )
+     * @param CryptoMoney $entity
+     * @param bool $flush
+     * @return void
+     */
     public function remove(CryptoMoney $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
@@ -41,6 +54,7 @@ class CryptoMoneyRepository extends ServiceEntityRepository
 
 
     /**
+     * Permet de renvoyer la crypto avec toutes ses transactions pour optimiser les requêtes à la base de données.
      * @return CryptoMoney[] Returns an array of CryptoMoney objects
      */
     public function findAllWithTransactions(): array
@@ -51,14 +65,4 @@ class CryptoMoneyRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
-
-//    public function findOneBySomeField($value): ?CryptoMoney
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }

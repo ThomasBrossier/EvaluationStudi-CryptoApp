@@ -5,6 +5,11 @@ namespace App\Tests;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/**
+ * Cette classe permet de tester l'authenticator de l'application.
+ *
+ * @todo  completer ce test pour améliorer la couverture du code.
+ **/
 class AppAuthenticatorTest extends WebTestCase
 {
     public function setUp(): void

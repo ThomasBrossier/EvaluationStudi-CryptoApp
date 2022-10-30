@@ -7,6 +7,10 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
+
+/**
+ * Cette classe représente l'entité qui stock l'utilisateur de l'application.
+ **/
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -22,16 +26,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private array $roles = [];
 
     /**
-     * @var string The hashed password
+     * @var string|null The hashed password
      */
     #[ORM\Column]
     private ?string $password = null;
 
+
+    /**
+     * Renvoie l'id de l'utilisateur (l'entité).
+     * @return ?int
+     **/
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * Renvoie l'email de l'utilisateur (l'entité).
+     * @return string|null
+     */
     public function getEmail(): ?string
     {
         return $this->email;
@@ -45,8 +58,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * A visual identifier that represents this user.
-     *
+     * Renvoie Un identifiant visuel qui represent l'utilisateur
+     * @return string
      * @see UserInterface
      */
     public function getUserIdentifier(): string
@@ -55,6 +68,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
+     * Renvoie un tableau des rôles de l'utilisateur
+     * @return array
      * @see UserInterface
      */
     public function getRoles(): array
@@ -66,6 +81,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique($roles);
     }
 
+    /**
+     * Initialise les rôles de l'utilisateur.
+     * @param array $roles
+     * @return self
+     */
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
@@ -74,6 +94,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
+     * Renvoie le mot de passe de l'utilisateur
      * @see PasswordAuthenticatedUserInterface
      */
     public function getPassword(): string
@@ -81,6 +102,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->password;
     }
 
+    /**
+     * Initialise le mot de passe de l'utilisateur
+     * @param string $password
+     * @return self
+     */
     public function setPassword(string $password): self
     {
         $this->password = $password;

@@ -8,6 +8,11 @@ use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
+
+/**
+ * Cette classe représente l'entité qui stock les données d'une cryptomonnaie.
+ **/
+
 #[ORM\Entity(repositoryClass: CryptoMoneyRepository::class)]
 class CryptoMoney
 {
@@ -34,21 +39,37 @@ class CryptoMoney
     #[Assert\Length(min:10, max:255)]
     private ?string $logoLink = null;
 
+    /**
+     * Lorsque l'entité est construite, une collection de transactions est initialisé.
+     **/
     public function __construct()
     {
         $this->transactions = new ArrayCollection();
     }
 
+    /**
+     * Renvoie l'id de l'entité.
+     * @return ?int
+     **/
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * Renvoie le titre (le nom de la crypto ) de l'entité.
+     * @return ?string
+     **/
     public function getTitle(): ?string
     {
         return $this->title;
     }
 
+    /**
+     * Initialise le titre (le nom de la crypto) de l'entité.
+     * @param string $title
+     * @return self
+     */
     public function setTitle(string $title): self
     {
         $this->title = $title;
@@ -57,6 +78,7 @@ class CryptoMoney
     }
 
     /**
+     * Renvoie les transactions liées à l'entité.
      * @return Collection<int, Transaction>
      */
     public function getTransactions(): Collection
@@ -64,6 +86,11 @@ class CryptoMoney
         return $this->transactions;
     }
 
+    /**
+     * Ajoute une transaction à la collection liée à l'entité.
+     * @param Transaction $transaction
+     * @return self
+     */
     public function addTransaction(Transaction $transaction): self
     {
         if (!$this->transactions->contains($transaction)) {
@@ -74,6 +101,11 @@ class CryptoMoney
         return $this;
     }
 
+    /**
+     * Supprime une transaction donnée de la collection de l'entité.
+     * @param Transaction $transaction
+     * @return self
+     */
     public function removeTransaction(Transaction $transaction): self
     {
         if ($this->transactions->removeElement($transaction)) {
@@ -86,11 +118,21 @@ class CryptoMoney
         return $this;
     }
 
+
+    /**
+     * Renvoie le symbol de l'entité.
+     * @return ?string
+     */
     public function getSymbol(): ?string
     {
         return $this->symbol;
     }
 
+    /**
+     * Permet d'initialiser le symbol de l'entité.
+     * @param string $symbol
+     * @return self
+     */
     public function setSymbol(string $symbol): self
     {
         $this->symbol = $symbol;
@@ -98,11 +140,20 @@ class CryptoMoney
         return $this;
     }
 
+    /**
+     * Renvoie le lien du logo de l'entité.
+     * @return ?string
+     */
     public function getLogoLink(): ?string
     {
         return $this->logoLink;
     }
 
+    /**
+     * Permet d'initialiser le lien du logo de l'entité.
+     * @param string|null $logoLink
+     * @return self
+     */
     public function setLogoLink(?string $logoLink): self
     {
         $this->logoLink = $logoLink;
@@ -110,7 +161,10 @@ class CryptoMoney
         return $this;
     }
 
-
+    /**
+     * Permet d'obtenir la quantité totale en stock de la crypto (l'entité).
+     * @return float
+     */
     public function getTotalQuantity(): float
     {
         $quantity = 0;
@@ -124,6 +178,11 @@ class CryptoMoney
 
         return $quantity;
     }
+
+    /**
+     * Permet d'obtenir la valeur totale des achats de la crypto (l'entité).
+     * @return float
+     */
     public function getTotalSpent(): float
     {
         $amount = 0;

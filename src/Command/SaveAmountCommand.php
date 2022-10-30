@@ -13,6 +13,14 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+
+/**
+ * Cette classe fait une commande appel un service qui va générer la valeur de l'investissement à l'instant T.
+ * Cette commande sera appelé plus tard via une tâche CRON programmé sur le serveur pour s'exécuter une fois par jour.
+ *
+ **/
+
+
 #[AsCommand(
     name: 'app:saveAmount',
     description: 'Save current amount result',

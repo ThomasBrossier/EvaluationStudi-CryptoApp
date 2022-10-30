@@ -3,10 +3,24 @@
 namespace App\Service;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
+/**
+ * Cette classe est un service qui permet de faire le lien avec l'API https://coinmarketcap.com
+ */
 class CryptoApiService extends AbstractController
 {
+    /**
+     * L'url de base de l'api est definit
+     * @param HttpClientInterface $httpClient
+     * @param string $baseUrl
+     */
     public function __construct(
         private HttpClientInterface $httpClient,
         private string $baseUrl = 'https://pro-api.coinmarketcap.com/'
@@ -14,6 +28,15 @@ class CryptoApiService extends AbstractController
     {
     }
 
+    /**
+     * Renvoie un tableau des cryptos obtenues par l'API
+     * @return mixed
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
     public function getCryptos()
     {
         return  $this->httpClient->request('GET',  $this->baseUrl.'v1/cryptocurrency/listings/latest', [
@@ -22,6 +45,17 @@ class CryptoApiService extends AbstractController
             ]
         ])->toArray()['data'];
     }
+
+    /**
+     * Renvoie un tableau des cryptos obtenues par l'API, filtrés en fonction des cryptos données.
+     * @param array $cryptosOwned
+     * @return array
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
     public function getCryptosFiltered(array $cryptosOwned )
     {
         $cryptosDownloaded =  $this->getCryptos();
@@ -50,6 +84,16 @@ class CryptoApiService extends AbstractController
         return $filteredCryptos;
     }
 
+    /**
+     * Renvoie les informations sur une crypto données (via son symbole)
+     * @param $symbol
+     * @return mixed
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
     public function getCryptosBySymbol($symbol)
     {
 
@@ -60,6 +104,13 @@ class CryptoApiService extends AbstractController
             ]
         ])->toArray()['data'][$symbol][0];
     }
+
+    /**
+     * Renvoie le lien de l'image dune crypto données (via son symbole)
+     * @param $symbol
+     * @return ResponseInterface
+     * @throws TransportExceptionInterface
+     */
     public function getLogoBySymbol($symbol)
     {
 
