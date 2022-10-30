@@ -43,3 +43,40 @@ Nous pouvons faire de même pour la base de données de test.
  symfony console doctrine:schema:update -f --env=test
  ```
  Cela permet de dissocier les base de données suivant les environnements. 
+ 
+ Nous devons ajouter un utilisateur fictif dans chacune de ces bases pour pouvoir acceder à l'application. 
+ 
+ Accédez à ladministration de votre base de données . et dans la table "USER" ajoutez une entrée. 
+ Mettez l'e-mail :
+  ```
+ test@test.fr
+  ```
+ et comme mot de passe : 
+  ```
+  $2y$13$V1Owfy.wLpsZGhlbLyVETuLQEHshDl4s6NrHImlgsQBL7xoz7htSy
+   ```
+Ce qui correspond à : 
+    ```
+    azerty
+     ```
+ une fois déhashé.
+ Si vous souaitez utiliser votre propre mot de passe, vous pouvez le générer grace à cette commande : 
+    ```
+    php bin/console security:hash-password VotreMotDePasse
+    ```
+  
+  Penser à faire la meme chose pour la base données de test.
+  
+  
+## Effectuer les Tests
+
+Enfin vous pouvez effectuer les tests via la commande : 
+```
+php bin/phpunit   
+```
+et même voir la couverture des tests via : 
+```
+php bin/phpunit --coverage-text 
+```
+
+Vous pouvez aussi vous connecter à l'application avec les identifiants crées précédement ! 
