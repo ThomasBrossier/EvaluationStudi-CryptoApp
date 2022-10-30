@@ -59,13 +59,14 @@ Ce qui correspond à :
     ```
     azerty
      ```
- une fois déhashé.
- Si vous souaitez utiliser votre propre mot de passe, vous pouvez le générer grace à cette commande : 
+une fois déhashé.
+ 
+Si vous souaitez utiliser votre propre mot de passe, vous pouvez le générer grace à cette commande : 
     ```
     php bin/console security:hash-password VotreMotDePasse
     ```
-  
-  Penser à faire la meme chose pour la base données de test.
+
+Penser à faire la meme chose pour la base données de test.
   
   
 ## Effectuer les Tests
