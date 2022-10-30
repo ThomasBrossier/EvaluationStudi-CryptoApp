@@ -1,7 +1,7 @@
 # EvaluationStudi-CryptoApp
 Cette application a pour but une gestion de crypto monnaie et permet de voir l'evolution des gains/pertes
 
-##I - Preparation du projet 
+## I - Preparation du projet 
 
 Commencez par cloner l'application.
 
@@ -24,7 +24,7 @@ Enfin vous pouver build la config webpack via la commande :
 yarn build
 
 
-##II - Preparation de la base de donnée. 
+## II - Preparation de la base de donnée. 
 
 IL faut ensuite créer la base de donnée en mode dev
 
