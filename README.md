@@ -53,15 +53,8 @@ Nous pouvons faire de même pour la base de données de test.
   ```
  et comme mot de passe : 
   ```
-  $2y$13$V1Owfy.wLpsZGhlbLyVETuLQEHshDl4s6NrHImlgsQBL7xoz7htSy
-   ```
-Ce qui correspond à : 
-    ```
-    azerty
-     ```
-une fois déhashé.
- 
-Si vous souaitez utiliser votre propre mot de passe, vous pouvez le générer grace à cette commande : 
+
+vous pouvez le générer grace à cette commande : 
     ```
     php bin/console security:hash-password VotreMotDePasse
     ```
