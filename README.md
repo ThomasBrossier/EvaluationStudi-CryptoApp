@@ -51,8 +51,7 @@ Nous pouvons faire de même pour la base de données de test.
   ```
  test@test.fr
   ```
- et comme mot de passe : 
-  ```
+ et comme mot de passe  ,
 
 vous pouvez le générer grace à cette commande : 
     ```
